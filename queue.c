@@ -18,7 +18,7 @@ struct list_head *q_new()
     if (!head)
         return NULL;
 
-    head->next = head->prev = head;
+    INIT_LIST_HEAD(head);
     return head;
 }
 
@@ -31,8 +31,7 @@ void q_free(struct list_head *head)
     struct list_head *pos, *tmp;
     list_for_each_safe (pos, tmp, head) {
         element_t *current_pos = list_entry(pos, element_t, list);
-        free(current_pos->value);
-        free(current_pos);
+        q_release_element(current_pos);
     }
     free(head);
 }
