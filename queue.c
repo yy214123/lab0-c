@@ -205,16 +205,17 @@ int q_ascend(struct list_head *head)
 
     struct list_head *pos = head->prev;
     element_t *entry = list_entry(pos, element_t, list);
-    int max = int(entry->value);
+    char *min = entry->value;
     int count = 1;
     pos = pos->prev;
 
     while (pos != head) {
         entry = list_entry(pos, element_t, list);
-        if (entry->value <= max) {
+        if (strcmp(entry->value, min) <= 0) {
+            min = entry->value;
             count++;
         } else {
-            struct list_head *tmp = head->prev;
+            struct list_head *tmp = pos->prev;
             list_del(pos);
             q_release_element(entry);
             pos = tmp;
@@ -236,16 +237,17 @@ int q_descend(struct list_head *head)
 
     struct list_head *pos = head->prev;
     element_t *entry = list_entry(pos, element_t, list);
-    int max = int(entry->value);
+    char *max = entry->value;
     int count = 1;
     pos = pos->prev;
 
     while (pos != head) {
         entry = list_entry(pos, element_t, list);
-        if (entry->value >= max) {
+        if (strcmp(entry->value, max) >= 0) {
+            max = entry->value;
             count++;
         } else {
-            struct list_head *tmp = head->prev;
+            struct list_head *tmp = pos->prev;
             list_del(pos);
             q_release_element(entry);
             pos = tmp;
