@@ -34,6 +34,7 @@ void q_free(struct list_head *head)
         q_release_element(current_pos);
     }
     free(head);
+    head = NULL;
 }
 
 /* Insert an element at head of queue */
@@ -48,6 +49,7 @@ bool q_insert_head(struct list_head *head, char *s)
     new->value = strdup(s);
     if (!new->value) {
         free(new);
+        new = NULL;
         return false;
     }
     list_add(&new->list, head);
@@ -66,6 +68,7 @@ bool q_insert_tail(struct list_head *head, char *s)
     new->value = strdup(s);
     if (!new->value) {
         free(new);
+        new = NULL;
         return false;
     }
     list_add_tail(&new->list, head);
