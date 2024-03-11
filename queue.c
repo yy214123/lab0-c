@@ -221,9 +221,18 @@ void q_reverseK(struct list_head *head, int k)
         count--;
     }
 }
-static int q_merge_two(struct list_head *first,
-                       struct list_head *second,
-                       bool descend)
+struct list_head *get_midpoint(struct list_head *head)
+{
+    struct list_head *slow = head->next, *fast = head->next;
+
+    while (fast != head && fast->next != head) {
+        slow = slow->next;
+        fast = fast->next->next;
+    }
+
+    return slow;
+}
+static int q_merge_two(struct list_head *first, struct list_head *second)
 {
     if (!first || !second)
         return 0;
@@ -234,8 +243,6 @@ static int q_merge_two(struct list_head *first,
         element_t *f = list_first_entry(first, element_t, list);
         element_t *s = list_first_entry(second, element_t, list);
         int cmp = strcmp(f->value, s->value);
-        if (descend)
-            cmp = -cmp;
         if (cmp <= 0)
             list_move_tail(&f->list, &tmp);
         else
@@ -248,33 +255,33 @@ static int q_merge_two(struct list_head *first,
 
     return count;
 }
-
-/* Sort elements of queue in ascending order */
-void q_sort(struct list_head *head, bool descend)
+void merge_sort(struct list_head *head)
 {
     /* Try to use merge sort*/
     if (!head || list_empty(head) || list_is_singular(head))
         return;
-
     /* Find middle point */
-    struct list_head *mid, *left, *right;
-    left = right = head;
-    do {
-        left = left->next;
-        right = right->prev;
-    } while (left != right && left->next != right);
-    mid = left;
+    struct list_head *mid;
+    mid = get_midpoint(head);
 
     /* Divide into two part */
     LIST_HEAD(second);
-    list_cut_position(&second, mid, head->prev);
+    list_cut_position(&second, mid->prev, head->prev);
 
     /* Conquer */
-    q_sort(head, descend);
-    q_sort(&second, descend);
+    merge_sort(head);
+    merge_sort(&second);
 
     /* Merge */
-    q_merge_two(head, &second, descend);
+    q_merge_two(head, &second);
+}
+/* Sort elements of queue in ascending order */
+void q_sort(struct list_head *head, bool descend)
+{
+    merge_sort(head);
+
+    if (descend)
+        q_reverse(head);
 }
 
 /* Remove every node which has a node with a strictly less value anywhere to
