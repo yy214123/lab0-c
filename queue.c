@@ -221,34 +221,60 @@ void q_reverseK(struct list_head *head, int k)
         count--;
     }
 }
-void swap(struct list_head *node1, struct list_head *node2)
+static int q_merge_two(struct list_head *first,
+                       struct list_head *second,
+                       bool descend)
 {
-    list_move(node2, node1->prev);
+    if (!first || !second)
+        return 0;
+
+    int count = 0;
+    LIST_HEAD(tmp);
+    while (!list_empty(first) && !list_empty(second)) {
+        element_t *f = list_first_entry(first, element_t, list);
+        element_t *s = list_first_entry(second, element_t, list);
+        int cmp = strcmp(f->value, s->value);
+        if (descend)
+            cmp = -cmp;
+        if (cmp <= 0)
+            list_move_tail(&f->list, &tmp);
+        else
+            list_move_tail(&s->list, &tmp);
+        count++;
+    }
+    count += q_size(first) + q_size(second);
+    list_splice(&tmp, first);
+    list_splice_tail_init(second, first);
+
+    return count;
 }
-/* Sort elements of queue in ascending/descending order */
+
+/* Sort elements of queue in ascending order */
 void q_sort(struct list_head *head, bool descend)
 {
+    /* Try to use merge sort*/
     if (!head || list_empty(head) || list_is_singular(head))
         return;
-    bool need_swap;
-    do {
-        need_swap = false;
-        struct list_head *current = head->next;
-        while (current->next != head) {
-            struct list_head *next = current->next;
-            element_t *cur_element = list_entry(current, element_t, list);
-            element_t *next_element = list_entry(next, element_t, list);
-            int cmp_result = strcmp(cur_element->value, next_element->value);
-            bool condition = descend ? (cmp_result < 0) : (cmp_result > 0);
 
-            if (condition) {
-                swap(current, next);
-                need_swap = true;
-            } else {
-                current = next;
-            }
-        }
-    } while (need_swap);
+    /* Find middle point */
+    struct list_head *mid, *left, *right;
+    left = right = head;
+    do {
+        left = left->next;
+        right = right->prev;
+    } while (left != right && left->next != right);
+    mid = left;
+
+    /* Divide into two part */
+    LIST_HEAD(second);
+    list_cut_position(&second, mid, head->prev);
+
+    /* Conquer */
+    q_sort(head, descend);
+    q_sort(&second, descend);
+
+    /* Merge */
+    q_merge_two(head, &second, descend);
 }
 
 /* Remove every node which has a node with a strictly less value anywhere to
