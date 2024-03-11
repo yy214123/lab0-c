@@ -34,7 +34,6 @@ void q_free(struct list_head *head)
         q_release_element(current_pos);
     }
     free(head);
-    head = NULL;
 }
 
 /* Insert an element at head of queue */
@@ -321,5 +320,19 @@ int q_descend(struct list_head *head)
 int q_merge(struct list_head *head, bool descend)
 {
     // https://leetcode.com/problems/merge-k-sorted-lists/
-    return 0;
+    if (!head || list_empty(head)) {
+        return 0;
+    }
+    queue_contex_t *first_ctx = list_entry(head->next, queue_contex_t, chain);
+    if (list_is_singular(head))
+        return first_ctx->size;
+    queue_contex_t *ctx = NULL;
+    list_for_each_entry (ctx, head, chain) {
+        if (ctx == first_ctx)
+            continue;
+        list_splice_tail_init(ctx->q, first_ctx->q);
+    }
+    first_ctx->size = q_size(first_ctx->q);
+    q_sort(first_ctx->q, descend);
+    return first_ctx->size;
 }
