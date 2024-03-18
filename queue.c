@@ -450,9 +450,20 @@ void list_sort(struct list_head *head, list_cmp_func_t cmp)
 }
 
 /* Sort elements of queue in ascending order */
+extern int sort_type;
 void q_sort(struct list_head *head, bool descend)
 {
-    list_sort(head, cmp);
+    switch (sort_type) {
+    case 0:
+        merge_sort(head);
+        break;
+    case 1:
+        list_sort(head, cmp);
+        break;
+    default:
+        printf("Unknown sort type.\n");
+        break;
+    }
 
     if (descend)
         q_reverse(head);
