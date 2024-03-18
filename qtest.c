@@ -1015,6 +1015,37 @@ static bool do_next(int argc, char *argv[])
     return q_show(0);
 }
 
+static bool do_load(int argc, char *argv[])
+{
+    if (argc != 2) {
+        report(1, "Usage: load <filename>");
+        return false;
+    }
+
+    const char *filename = argv[1];
+    FILE *file = fopen(filename, "r");
+    if (!file) {
+        report(1, "Could not open file %s", filename);
+        return false;
+    }
+
+    char buffer[MAXSTRING];
+    while (fgets(buffer, sizeof(buffer), file)) {
+        buffer[strcspn(buffer, "\n")] = 0;
+        char *insert_args[] = {"it", buffer};
+
+        if (!queue_insert(POS_TAIL, 2, insert_args)) {
+            fclose(file);
+            report(1, "Failed to insert %s into the queue", buffer);
+            return false;
+        }
+    }
+
+    fclose(file);
+    report(2, "Loaded data from %s", filename);
+    return true;
+}
+
 static void console_init()
 {
     ADD_COMMAND(new, "Create new queue", "");
@@ -1055,6 +1086,7 @@ static void console_init()
                 "");
     ADD_COMMAND(reverseK, "Reverse the nodes of the queue 'K' at a time",
                 "[K]");
+    ADD_COMMAND(load, "Load data", "file");
     add_param("length", &string_length, "Maximum length of displayed string",
               NULL);
     add_param("malloc", &fail_probability, "Malloc failure probability percent",
