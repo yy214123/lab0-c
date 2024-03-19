@@ -385,6 +385,13 @@ static bool do_time(int argc, char *argv[])
         } else {
             delta = delta_time(&last_time);
             report(1, "Delta time = %.3f", delta);
+            FILE *file = fopen("delta_times.txt", "a");
+            if (file != NULL) {
+                fprintf(file, "Delta time = %.3f\n", delta);
+                fclose(file);
+            } else {
+                report(1, "Unable to open delta_times.txt for writing.");
+            }
         }
     }
 
