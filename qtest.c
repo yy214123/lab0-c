@@ -273,7 +273,7 @@ static bool queue_insert(position_t pos, int argc, char *argv[])
     }
     exception_cancel();
 
-    q_show(3);
+    // q_show(3);
     return ok;
 }
 
@@ -561,6 +561,13 @@ static bool do_size(int argc, char *argv[])
     if (current && exception_setup(true)) {
         for (int r = 0; ok && r < reps; r++) {
             cnt = q_size(current->q);
+            FILE *file = fopen("delta_times.txt", "a");
+            if (file != NULL) {
+                fprintf(file, "%d\n", cnt);
+                fclose(file);
+            } else {
+                report(1, "Unable to open delta_times.txt for writing.");
+            }
             ok = ok && !error_check();
         }
     }
@@ -577,7 +584,7 @@ static bool do_size(int argc, char *argv[])
         }
     }
 
-    q_show(3);
+    // q_show(3);
 
     return ok && !error_check();
 }
@@ -628,7 +635,7 @@ bool do_sort(int argc, char *argv[])
         }
     }
 
-    q_show(3);
+    // q_show(3);
     return ok && !error_check();
 }
 
