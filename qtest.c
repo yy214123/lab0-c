@@ -1060,27 +1060,29 @@ static bool do_shuffle(int argc, char *argv[])
         return false;
     }
 
-    const char *filename = argv[1];
-    FILE *file = fopen(filename, "r");
-    if (!file) {
-        report(1, "Could not open file %s", filename);
+    if (!current || !current->q) {
+        report(3, "Warning: Calling shuffle on null queue");
         return false;
     }
+    error_check();
 
-    char buffer[MAXSTRING];
-    while (fgets(buffer, sizeof(buffer), file)) {
-        buffer[strcspn(buffer, "\n")] = 0;
-        char *insert_args[] = {"it", buffer};
 
-        if (!queue_insert(POS_TAIL, 2, insert_args)) {
-            fclose(file);
-            report(1, "Failed to insert %s into the queue", buffer);
-            return false;
+    struct list_head *old = NULL;
+    struct list_head *head = current->q;
+    int cnt = q_size(head);
+    int random;
+
+    while (cnt) {
+        random = rand() % cnt;
+        list_for_each (old, head) {
+            if (random == 0)
+                break;
+            random--;
         }
+        list_move_tail(old, head);
+        cnt--;
     }
-
-    fclose(file);
-    report(2, "Loaded data from %s", filename);
+    q_show(3);
     return true;
 }
 
