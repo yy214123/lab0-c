@@ -121,6 +121,18 @@ int q_size(struct list_head *head)
     return len;
 }
 
+struct list_head *get_midpoint(struct list_head *head)
+{
+    struct list_head *slow = head->next, *fast = head->next;
+
+    while (fast != head && fast->next != head) {
+        slow = slow->next;
+        fast = fast->next->next;
+    }
+
+    return slow;
+}
+
 /* Delete the middle node in queue */
 bool q_delete_mid(struct list_head *head)
 {
@@ -128,14 +140,7 @@ bool q_delete_mid(struct list_head *head)
     if (!head || list_empty(head))
         return false;
 
-    int mid = q_size(head) / 2;
-    struct list_head *current = NULL;
-    int i = 0;
-    list_for_each (current, head) {
-        if (i == mid)
-            break;
-        i++;
-    }
+    struct list_head *current = get_midpoint(head);
     element_t *mid_node = list_entry(current, element_t, list);
     list_del(current);
     q_release_element(mid_node);
@@ -229,18 +234,6 @@ void q_reverseK(struct list_head *head, int k)
         tmp = sub_q_reverse(tmp, k);
         count--;
     }
-}
-
-struct list_head *get_midpoint(struct list_head *head)
-{
-    struct list_head *slow = head->next, *fast = head->next;
-
-    while (fast != head && fast->next != head) {
-        slow = slow->next;
-        fast = fast->next->next;
-    }
-
-    return slow;
 }
 
 static int q_merge_two(struct list_head *first, struct list_head *second)
