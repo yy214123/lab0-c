@@ -24,7 +24,7 @@
 #include "random.h"
 
 /* Sort type*/
-int sort_type = 0;
+int sort_type = 2;
 
 /* Shannon entropy */
 extern double shannon_entropy(const uint8_t *input_data);
@@ -1138,8 +1138,8 @@ static void console_init()
               "Number of times allow queue operations to return false", NULL);
     add_param("descend", &descend,
               "Sort and merge queue in ascending/descending order", NULL);
-    add_param("sort_type", &sort_type, "0 for merge_sort, 1 for list_sort",
-              NULL);
+    add_param("sort_type", &sort_type,
+              "0 for merge_sort, 1 for list_sort, 2 for timsort", NULL);
 }
 
 /* Signal handlers */
