@@ -24,7 +24,7 @@
 #include "random.h"
 
 /* Sort type*/
-int sort_type = 2;
+int sort_type = 0;
 
 /* Shannon entropy */
 extern double shannon_entropy(const uint8_t *input_data);
@@ -558,10 +558,23 @@ static bool do_size(int argc, char *argv[])
         report(3, "Warning: Calling size on null queue");
     error_check();
 
+    const char *fileName;
+    switch (sort_type) {
+    case 1:
+        fileName = "ls_delta_times.txt";
+        break;
+    case 2:
+        fileName = "ts_delta_times.txt";
+        break;
+    default:
+        fileName = "ms_delta_times.txt";
+        break;
+    }
+
     if (current && exception_setup(true)) {
         for (int r = 0; ok && r < reps; r++) {
             cnt = q_size(current->q);
-            FILE *file = fopen("delta_times.txt", "a");
+            FILE *file = fopen(fileName, "a");
             if (file != NULL) {
                 fprintf(file, "%d\n", cnt);
                 fclose(file);
@@ -1055,34 +1068,32 @@ static bool do_load(int argc, char *argv[])
 
 static bool do_shuffle(int argc, char *argv[])
 {
-    if (argc != 1) {
-        report(1, "%s takes no arguments", argv[0]);
+    if (argc != 2) {
+        report(1, "Usage: load <filename>");
         return false;
     }
 
-    if (!current || !current->q) {
-        report(3, "Warning: Calling shuffle on null queue");
+    const char *filename = argv[1];
+    FILE *file = fopen(filename, "r");
+    if (!file) {
+        report(1, "Could not open file %s", filename);
         return false;
     }
-    error_check();
 
+    char buffer[MAXSTRING];
+    while (fgets(buffer, sizeof(buffer), file)) {
+        buffer[strcspn(buffer, "\n")] = 0;
+        char *insert_args[] = {"it", buffer};
 
-    struct list_head *old = NULL;
-    struct list_head *head = current->q;
-    int cnt = q_size(head);
-    int random;
-
-    while (cnt) {
-        random = rand() % cnt;
-        list_for_each (old, head) {
-            if (random == 0)
-                break;
-            random--;
+        if (!queue_insert(POS_TAIL, 2, insert_args)) {
+            fclose(file);
+            report(1, "Failed to insert %s into the queue", buffer);
+            return false;
         }
-        list_move_tail(old, head);
-        cnt--;
     }
-    q_show(3);
+
+    fclose(file);
+    report(2, "Loaded data from %s", filename);
     return true;
 }
 
@@ -1138,8 +1149,8 @@ static void console_init()
               "Number of times allow queue operations to return false", NULL);
     add_param("descend", &descend,
               "Sort and merge queue in ascending/descending order", NULL);
-    add_param("sort_type", &sort_type,
-              "0 for merge_sort, 1 for list_sort, 2 for timsort", NULL);
+    add_param("sort_type", &sort_type, "0 for merge_sort, 1 for list_sort",
+              NULL);
 }
 
 /* Signal handlers */

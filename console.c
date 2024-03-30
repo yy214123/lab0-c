@@ -371,10 +371,26 @@ static bool do_log(int argc, char *argv[])
     return result;
 }
 
+extern int sort_type;
 static bool do_time(int argc, char *argv[])
 {
     double delta = delta_time(&last_time);
     bool ok = true;
+    const char *fileName;
+    switch (sort_type) {
+    case 0:
+        fileName = "ms_delta_times.txt";
+        break;
+    case 1:
+        fileName = "ls_delta_times.txt";
+        break;
+    case 2:
+        fileName = "ts_delta_times.txt";
+        break;
+    default:
+        fileName = "ms_delta_times.txt";
+        break;
+    }
     if (argc <= 1) {
         double elapsed = last_time - first_time;
         report(1, "Elapsed time = %.3f, Delta time = %.3f", elapsed, delta);
@@ -385,7 +401,7 @@ static bool do_time(int argc, char *argv[])
         } else {
             delta = delta_time(&last_time);
             report(1, "Delta time = %.3f", delta);
-            FILE *file = fopen("delta_times.txt", "a");
+            FILE *file = fopen(fileName, "a");
             if (file != NULL) {
                 fprintf(file, "%.3f,", delta);
                 fclose(file);
@@ -459,10 +475,9 @@ static bool push_file(char *fname)
     int fd = fname ? open(fname, O_RDONLY) : STDIN_FILENO;
     has_infile = fname ? true : false;
     if (fd < 0)
-        return false;
 
-    if (fd > fd_max)
-        fd_max = fd;
+        if (fd > fd_max)
+            fd_max = fd;
 
     rio_t *rnew = malloc_or_fail(sizeof(rio_t), "push_file");
     rnew->fd = fd;
