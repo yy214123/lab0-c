@@ -123,14 +123,14 @@ int q_size(struct list_head *head)
 
 struct list_head *get_midpoint(struct list_head *head)
 {
-    struct list_head *slow = head->next, *fast = head->next;
+    struct list_head *node1 = head->next, *node2 = head->prev;
 
-    while (fast != head && fast->next != head) {
-        slow = slow->next;
-        fast = fast->next->next;
+    while (node1->next != node2 && node1 != node2) {
+        node1 = node1->next;
+        node2 = node2->prev;
     }
 
-    return slow;
+    return node2;
 }
 
 /* Delete the middle node in queue */
