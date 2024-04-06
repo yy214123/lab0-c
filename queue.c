@@ -615,7 +615,7 @@ int q_ascend(struct list_head *head)
 
     while (pos != head) {
         entry = list_entry(pos, element_t, list);
-        if (strcmp(entry->value, min) <= 0) {
+        if (strcmp(entry->value, min) < 0) {
             min = entry->value;
             count++;
         } else {
@@ -647,7 +647,7 @@ int q_descend(struct list_head *head)
 
     while (pos != head) {
         entry = list_entry(pos, element_t, list);
-        if (strcmp(entry->value, max) >= 0) {
+        if (strcmp(entry->value, max) > 0) {
             max = entry->value;
             count++;
         } else {
