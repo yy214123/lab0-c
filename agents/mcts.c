@@ -64,7 +64,6 @@ static struct node *select_move(struct node *node)
 
 static double simulate(char *table, char player)
 {
-    char win;
     char current_player = player;
     char temp_table[N_GRIDS];
     memcpy(temp_table, table, N_GRIDS);
@@ -80,6 +79,7 @@ static double simulate(char *table, char player)
         int move = moves[rand() % n_moves];
         free(moves);
         temp_table[move] = current_player;
+        char win;
         if ((win = check_win(temp_table)) != ' ')
             return calculate_win_value(win, player);
         current_player ^= 'O' ^ 'X';
@@ -144,7 +144,9 @@ int mcts(char *table, char player)
             best_node = root->children[i];
         }
     }
-    int best_move = best_node->move;
+    int best_move = 0;
+    if (best_node != NULL)
+        best_move = best_node->move;
     free_node(root);
     return best_move;
 }

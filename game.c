@@ -71,7 +71,7 @@ double calculate_win_value(char win, char player)
     return 0.5;
 }
 
-int *available_moves(char *table)
+int *available_moves(const char *table)
 {
     int *moves = malloc(N_GRIDS * sizeof(int));
     int m = 0;

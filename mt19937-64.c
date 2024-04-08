@@ -80,9 +80,8 @@ void mt19937_init(uint64_t seed)
 /* generates a random number on [0, 2^64-1]-interval */
 uint64_t mt19937_rand(void)
 {
-    int i;
     uint64_t x;
-    static uint64_t mag01[2] = {0ULL, MATRIX_A};
+    static const uint64_t mag01[2] = {0ULL, MATRIX_A};
 
     if (mti >= NN) { /* generate NN words at one time */
 
@@ -90,7 +89,7 @@ uint64_t mt19937_rand(void)
         /* a default initial seed is used     */
         if (mti == NN + 1)
             mt19937_init(5489ULL);
-
+        int i;
         for (i = 0; i < NN - MM; i++) {
             x = (mt[i] & UM) | (mt[i + 1] & LM);
             mt[i] = mt[i + MM] ^ (x >> 1) ^ mag01[(int) (x & 1ULL)];

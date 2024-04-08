@@ -12,7 +12,7 @@
 
 // TODO: Find a more efficient hash, we could not store 5x5 or larger board,
 // Since we could have 3^25 states and it might overflow.
-int table_to_hash(char *table)
+int table_to_hash(const char *table)
 {
     int ret = 0;
     for (int i = 0; i < N_GRIDS; i++) {
@@ -68,7 +68,8 @@ int get_action_exploit(char *table, rl_agent_t *agent)
 #ifdef VERBOSE
     printf("[ ");
 #endif
-    for_each_empty_grid (i, table) {
+    for_each_empty_grid(i, table)
+    {
         table[i] = agent->player;
         float new_q = state_value[table_to_hash(table)];
 #ifdef VERBOSE

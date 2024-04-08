@@ -60,9 +60,12 @@ void zobrist_clear(void)
     for (int i = 0; i < HASH_TABLE_SIZE; i++) {
         while (!hlist_empty(&hash_table[i])) {
             zobrist_entry_t *entry;
-            entry = hlist_entry(hash_table[i].first, zobrist_entry_t, ht_list);
-            hlist_del(&entry->ht_list);
-            free(entry);
+            if (hash_table[i].first) {
+                entry =
+                    hlist_entry(hash_table[i].first, zobrist_entry_t, ht_list);
+                hlist_del(&entry->ht_list);
+                free(entry);
+            }
         }
         INIT_HLIST_HEAD(&hash_table[i]);
     }
