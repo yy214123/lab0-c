@@ -47,6 +47,7 @@ deps := $(OBJS:%.o=.%.o.d)
 qtest: $(OBJS)
 	$(VECHO) "  LD\t$@\n"
 	$(Q)$(CC) $(LDFLAGS) -o $@ $^ -lm
+	$(MAKE) -f Makefile_ttt
 
 %.o: %.c
 	@mkdir -p .$(DUT_DIR)
@@ -79,6 +80,7 @@ clean:
 	rm -rf .$(DUT_DIR)
 	rm -rf *.dSYM
 	(cd traces; rm -f *~)
+	$(MAKE) -f Makefile_ttt clean
 
 distclean: clean
 	rm -f .cmd_history
