@@ -165,21 +165,17 @@ void q_reverse(struct list_head *head)
 {
     if (!head || list_empty(head))
         return;
-    struct list_head *curr, *safe, *temp;
-    list_for_each_safe (curr, safe, head) {
-        temp = curr->next;
-        curr->next = curr->prev;
-        curr->prev = temp;
-    }
-    temp = head->next;
-    head->next = head->prev;
-    head->prev = temp;
+    struct list_head *curr, *safe;
+    list_for_each_safe (curr, safe, head)
+        list_move(curr, head);
 }
 
 /* Reverse the nodes of the list k at a time */
 void q_reverseK(struct list_head *head, int k)
 {
     // https://leetcode.com/problems/reverse-nodes-in-k-group/
+    if (!head || list_empty(head))
+        return;
 }
 
 /* Sort elements of queue in ascending/descending order */
