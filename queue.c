@@ -175,8 +175,10 @@ void q_reverse(struct list_head *head)
 void q_reverseK(struct list_head *head, int k)
 {
     // https://leetcode.com/problems/reverse-nodes-in-k-group/
-    if (!head || list_empty(head))
+    if (!head || list_empty(head) || k == 1)
         return;
+    if (k == q_size(head))
+        q_reverse(head);
     struct list_head *curr = head->next, *safe, *dummy = head;
     int count = k;
     int group_count = q_size(head) / k;
