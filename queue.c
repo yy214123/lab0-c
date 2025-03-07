@@ -24,7 +24,7 @@ void q_free(struct list_head *head)
         return;
     }
     struct list_head *node, *safe;
-    list_for_each_safe (node, safe, head) {
+    list_for_each_safe(node, safe, head) {
         element_t *current = list_entry(node, element_t, list);
         q_release_element(current);
     }
@@ -102,7 +102,7 @@ int q_size(struct list_head *head)
     int len = 0;
     struct list_head *li;
 
-    list_for_each (li, head)
+    list_for_each(li, head)
         len++;
     return len;
 }
@@ -167,7 +167,7 @@ void q_reverse(struct list_head *head)
     if (!head || list_empty(head))
         return;
     struct list_head *curr, *safe;
-    list_for_each_safe (curr, safe, head)
+    list_for_each_safe(curr, safe, head)
         list_move(curr, head);
 }
 
