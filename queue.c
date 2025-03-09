@@ -228,12 +228,12 @@ int q_ascend(struct list_head *head)
         int remove = 0;
         next = node = cur->next;
         while (node != head) {
-            struct list_head *temp = node->next;
             if (strcmp(list_entry(cur, element_t, list)->value,
                        list_entry(node, element_t, list)->value) > 0) {
                 remove = 1;
+                break;
             }
-            node = temp;
+            node = node->next;
         }
         if (remove) {
             next = cur->next;
