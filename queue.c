@@ -4,6 +4,7 @@
 
 #include "list_sort.h"
 #include "queue.h"
+#include "sort.c"
 
 /* Compare two elements based on their string values. */
 int cmp(const struct list_head *a, const struct list_head *b)
@@ -217,6 +218,7 @@ void q_reverseK(struct list_head *head, int k)
 void q_sort(struct list_head *head, bool descend)
 {
     list_sort(head, cmp);
+    // list_merge_sort_iterative(head,cmp,q_size);
     if (descend)
         q_reverse(head);
 }
