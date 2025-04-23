@@ -15,6 +15,7 @@ arg
 args
 Arm
 asan
+asm
 aspell
 atexit
 atof
@@ -73,6 +74,7 @@ en
 enqueue
 enum
 env
+EOF
 epoll
 errno
 etc
@@ -143,6 +145,7 @@ github
 glibc
 gprof
 hotfix
+href
 http
 https
 hv
@@ -201,6 +204,7 @@ mknod
 mlock
 mlockall
 mmap
+monospace
 mprotect
 mq
 mrs
@@ -287,6 +291,7 @@ regcomp
 regerror
 regexec
 regfree
+rel
 renderer
 retpoline
 reverseK

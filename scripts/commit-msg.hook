@@ -85,8 +85,8 @@ read_commit_message() {
     REPLY="${REPLY%%*( )}"
     shopt -u extglob
 
-    # ignore comments
-    [[ $REPLY =~ ^# ]]
+    # ignore comments and indented lines
+    [[ $REPLY =~ ^(#|  ) ]]
     test $? -eq 0 || COMMIT_MSG_LINES+=("$REPLY")
 
     [[ $REPLY =~ "# ------------------------ >8 ------------------------" ]]
@@ -452,7 +452,7 @@ validate_commit_message() {
     candidate="${BASH_REMATCH[2]}"
     # Only warn if the candidate filename ends with .c or .h
     if [[ "$candidate" =~ \.(c|h)$ ]]; then
-      add_warning 1 "Avoid using just a filename like '$candidate'. Provide a functional, meaningful description"	    
+      add_warning 1 "Avoid using just a filename like '$candidate'. Provide a functional, meaningful description"
     fi
   fi
 
@@ -483,7 +483,8 @@ validate_commit_message() {
 
   MSG_FOR_SPELLCHECK_LINE_FINDING=$(echo "$FULL_COMMIT_MSG_WITH_SPACE" | sed -E \
     -e "s/(['\"][^'\"]*['\"])//g" \
-    -e "s/\bcommit[[:space:]]+[0-9a-fA-F]{7,40}\b/commit/g")
+    -e "s/\bcommit[[:space:]]+[0-9a-fA-F]{7,40}\b/commit/g" \
+    -e "/^  /d")
   MSG_FOR_SPELLCHECK=$(echo "$MSG_FOR_SPELLCHECK_LINE_FINDING" | sed '/^[[:space:]]*$/d')
 
   # Use aspell to list misspelled words according to American English, ignoring quoted text.
